@@ -1,4 +1,11 @@
 # ThoughtWorks Homework 2017-chengdu
+姓名：杨新（young）
+
+电话：18280336118
+
+邮箱：ityoung@126.com
+
+***
 
 ##环境要求
 python2.7
