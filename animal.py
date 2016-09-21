@@ -52,25 +52,15 @@ def isAnimalDataRight(line):
     dataSplit = line.split(' ')
     if len(dataSplit) == 3:
         if dataSplit[0] not in animalDict:
-            animalDict[dataSplit[0]] = [int(dataSplit[1]), int(dataSplit[2]), True]
+            animalDict[dataSplit[0]] = [int(dataSplit[1]), int(dataSplit[2]), time.mktime(time.strptime(lastDateTime, "%Y/%m/%d %H:%M:%S"))]
             return True
     elif len(dataSplit) == 5:
         if dataSplit[0] in animalDict:
             if int(dataSplit[1]) == animalDict[dataSplit[0]][0] and int(dataSplit[2]) == animalDict[dataSplit[0]][1]:
-                animalDict[dataSplit[0]] = [int(dataSplit[1])+int(dataSplit[3]), int(dataSplit[2])+int(dataSplit[4]), True]
+                animalDict[dataSplit[0]][0] = int(dataSplit[1])+int(dataSplit[3])
+                animalDict[dataSplit[0]][1] = int(dataSplit[2])+int(dataSplit[4])
                 return True
     return False
-
-def delFalseAnimal(animalDict):
-    finishDelDict = {}
-    for item in animalDict:
-        if  animalDict[item][2] == True:
-            animalDict[item][2] = False
-            finishDelDict[item] = animalDict[item]
-    return finishDelDict
-    ''' solve 2:      del animalDict[item] while animalDict[item][2] == False, 
-        insufficient: sometimes raise RuntimeError: dictionary changed size during iteration
-    '''
 
 def isDateOrderRight(line):
     global lastDateTime
@@ -87,31 +77,38 @@ def isDateOrderRight(line):
 def getFinalPos(string):
     a = string.split(" ")
     if len(a) == 3:
-        animalDict[a[0]] = [int(a[1]), int(a[2])]
+        animalDict[a[0]][0] = int(a[1])
+        animalDict[a[0]][1] = int(a[2])
     elif len(a) == 5:    #even 5, animals still can run out of range
-        animalDict[a[0]] = [int(a[1])+int(a[3]), int(a[2])+int(a[4])]
+        animalDict[a[0]][0] = int(a[1])+int(a[3])
+        animalDict[a[0]][1] = int(a[2])+int(a[4])
     
-def sortAnimal():
+def sortAnimal(stime):
     sorted(animalDict, None, None, False)
     for i in animalDict:
+        if stime<animalDict[i][2]:
+            print i, animalDict[i][2]
+            continue
         print i, animalDict[i][0], animalDict[i][1]
         
-def findID(historyData, id):
     '''select animal belong to id input
     '''
+def findID(historyData, id):
     foundFlag = False
-    animalDict.clear()
     for line in historyData.split('\n'):
         line = line.strip()
         if line != id and foundFlag == False:
             continue
         foundFlag = True
-        if line == id or isDate(line):
+        if line == id:
+            continue
+        if isDate(line):
+            selectTime = time.mktime(time.strptime(line, "%Y/%m/%d %H:%M:%S"))
             continue
         if not ' ' in line:  #break when hit the next id
             break
         getFinalPos(line)
-    sortAnimal()
+    sortAnimal(selectTime)
     
 def input():
     global animalDict
@@ -131,7 +128,6 @@ def input():
                 lastID       = line
                 historyData += lastID+'\n'
                 nextDateFlag = True
-                animalDict   = delFalseAnimal(animalDict)
                 continue
             if not isAnimalDataRight(line):
                 print "Conflict found at", lastID
@@ -146,6 +142,7 @@ def input():
                 return -2
             historyData += line+'\n'
             nextDateFlag = False
+    print animalDict
     id = raw_input()
     while (id) == '':
         id = raw_input()
