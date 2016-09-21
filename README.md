@@ -5,8 +5,8 @@
 ###运行作业：
 * 1.IDE运行作业代码animal.py，或console进入目录后运行 python animal.py；
 * 2.输入historyData，可直接复制粘贴整段测试数据；
-```python
-  e4e87cb2-8e9a-4749-abb6-26c59344dfee
+```BASH
+e4e87cb2-8e9a-4749-abb6-26c59344dfee
 2016/09/02 22:30:46
 cat1 10 9
 351055db-33e6-4f9b-bfe1-16f1ac446ac1
