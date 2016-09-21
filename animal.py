@@ -87,7 +87,6 @@ def sortAnimal(stime):
     sorted(animalDict, None, None, False)
     for i in animalDict:
         if stime<animalDict[i][2]:
-            print i, animalDict[i][2]
             continue
         print i, animalDict[i][0], animalDict[i][1]
         
