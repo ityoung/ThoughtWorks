@@ -79,16 +79,45 @@ def getFinalPos(string):
     if len(a) == 3:
         animalDict[a[0]][0] = int(a[1])
         animalDict[a[0]][1] = int(a[2])
+        animalDict[a[0]][2] = 0
     elif len(a) == 5:    #even 5, animals still can run out of range
         animalDict[a[0]][0] = int(a[1])+int(a[3])
         animalDict[a[0]][1] = int(a[2])+int(a[4])
+        animalDict[a[0]][2] = 0
     
 def sortAnimal(stime):
     sorted(animalDict, None, None, False)
     for i in animalDict:
-        if stime<animalDict[i][2]:
+        if stime>=animalDict[i][2]:
+            if animalDict[i][2] != 0:
+                getTimePos(i, animalDict[i][2])
+            print i, animalDict[i][0], animalDict[i][1]
+        
+def getTimePos(animal, stime):
+    foundFlag = False
+    firstFlag = False
+    for line in historyData.split('\n'):
+        line = line.strip()
+        if not isDate(line) and foundFlag==False:
             continue
-        print i, animalDict[i][0], animalDict[i][1]
+        if isDate(line):
+            foundFlag=True
+            nowDate =line
+            sNowDate = time.mktime(time.strptime(nowDate, "%Y/%m/%d %H:%M:%S"))
+        if sNowDate<animalDict[animal][2]:
+            continue
+        if sNowDate>stime:
+            break
+        if animal in line:
+            target = line.split(" ")
+            if firstFlag == False:
+                animalDict[animal][0] = int(target[1])
+                animalDict[animal][1] = int(target[2])
+                firstFlag = True
+            else:
+                animalDict[animal][0] += int(target[3])
+                animalDict[animal][1] += int(target[4])
+
         
     '''select animal belong to id input
     '''
@@ -110,7 +139,7 @@ def findID(historyData, id):
     sortAnimal(selectTime)
     
 def input():
-    global animalDict
+    global animalDict, historyData
     stopWord     = ''
     historyData  = ''
     lastID       = ''
@@ -141,7 +170,6 @@ def input():
                 return -2
             historyData += line+'\n'
             nextDateFlag = False
-    print animalDict
     id = raw_input()
     while (id) == '':
         id = raw_input()
@@ -151,6 +179,6 @@ def input():
         print  "Invalid format."
         return -1
     return 0
-
+    
 if __name__ == "__main__":
     input()
