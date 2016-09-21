@@ -149,7 +149,11 @@ def input():
     id = raw_input()
     while (id) == '':
         id = raw_input()
-    findID(historyData, id)
+    if isID(id):
+        findID(historyData, id)
+    else:
+        print  "Invalid format."
+        return -1
     return 0
 
 if __name__ == "__main__":
