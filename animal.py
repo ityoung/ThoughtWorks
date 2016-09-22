@@ -47,7 +47,7 @@ def isAnimal(string):
         return False
     
 def isAnimalDataRight(line):
-    """old: compare    new: format
+    """old: compare and update    new: add
     """
     dataSplit = line.split(' ')
     if len(dataSplit) == 3:
@@ -75,17 +75,25 @@ def isDateOrderRight(line):
         return False
 
 def getFinalPos(string):
+    """ get animals and their positions match the ID input,
+        and set their flag to 0, cuz 0 always less than other 'mktime'
+    """
     a = string.split(" ")
     if len(a) == 3:
         animalDict[a[0]][0] = int(a[1])
         animalDict[a[0]][1] = int(a[2])
         animalDict[a[0]][2] = 0
-    elif len(a) == 5:    #even 5, animals still can run out of range
+    elif len(a) == 5:
         animalDict[a[0]][0] = int(a[1])+int(a[3])
         animalDict[a[0]][1] = int(a[2])+int(a[4])
         animalDict[a[0]][2] = 0
     
 def sortAnimal(stime):
+    """ sort animalDict, and traverse it, print the animals info with
+        whose flag are 0.
+        If their exist flag(time) less than input argument and unequal
+        to 0, recalculate that animal's position by 'getTimePos'
+    """
     sorted(animalDict, None, None, False)
     for i in animalDict:
         if stime>=animalDict[i][2]:
@@ -94,6 +102,8 @@ def sortAnimal(stime):
             print i, animalDict[i][0], animalDict[i][1]
         
 def getTimePos(animal, stime):
+    """ find the first position and add the change till given time.
+    """
     foundFlag = False
     firstFlag = False
     for line in historyData.split('\n'):
@@ -118,9 +128,7 @@ def getTimePos(animal, stime):
                 animalDict[animal][0] += int(target[3])
                 animalDict[animal][1] += int(target[4])
 
-        
-    '''select animal belong to id input
-    '''
+
 def findID(historyData, id):
     foundFlag = False
     for line in historyData.split('\n'):
@@ -143,33 +151,46 @@ def input():
     stopWord     = ''
     historyData  = ''
     lastID       = ''
-    nextDateFlag = False        #0:id and animal    1:datetime
+    dataFlag = 0        #0:id and animal    1:datetime    2:animal only
     for line in iter(raw_input, stopWord):
-        if nextDateFlag == False:
-            if isAnimal(line) and historyData == '':
+        if dataFlag == 0:
+            if isAnimal(line) and historyData == '':    #first line
                 print  "Invalid format."
                 return -1
-            if not isAnimal(line):
+            if not isAnimal(line):                      #id
                 if not isID(line):
                     print  "Invalid format."
                     return -1
                 lastID       = line
                 historyData += lastID+'\n'
-                nextDateFlag = True
+                dataFlag = 1
                 continue
+            if not isAnimalDataRight(line):             #animal
+                print "Conflict found at", lastID
+                return -2
+            historyData += line+'\n'
+        elif dataFlag == 1:
+            if not isDate(line):
+                print  "Invalid format."
+                return -1
+            if not isDateOrderRight(line):              #datetime
+                print "Conflict found at", lastID
+                return -2
+            historyData += line+'\n'
+            dataFlag = 2
+        elif dataFlag == 2:
+            if not isAnimal(line):                      #animal
+                print  "Invalid format."
+                return -1
             if not isAnimalDataRight(line):
                 print "Conflict found at", lastID
                 return -2
             historyData += line+'\n'
-        elif nextDateFlag == True:
-            if not isDate(line):
-                print  "Invalid format."
-                return -1
-            if not isDateOrderRight(line):
-                print "Conflict found at", lastID
-                return -2
-            historyData += line+'\n'
-            nextDateFlag = False
+            dataFlag = 0
+    if dataFlag !=0:                                    #last line must be animal data
+        print  "Invalid format."
+        return -1
+        
     id = raw_input()
     while (id) == '':
         id = raw_input()
@@ -182,3 +203,4 @@ def input():
     
 if __name__ == "__main__":
     input()
+    
